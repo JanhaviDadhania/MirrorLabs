@@ -16,5 +16,6 @@ Files:
 - `fig2_forced_average.png`: different sign choices all average to N, but shapes differ.
 - `fig3_flatness_vs_N.png`: random and Rudin-Shapiro vs the ultraflat goal.
 - `fig4_summary.png`: question / before / result.
+- `fig5_ultraflat_target.png`: random vs Rudin-Shapiro vs the ultraflat target (a perfect circle). The right panel is the definition drawn, not a constructed polynomial. Script: `fig5_ultraflat_target.py`.
 
 The figures illustrate the question. They do not show ultraflat polynomials.
