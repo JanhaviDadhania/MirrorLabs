@@ -671,3 +671,147 @@ Merging test, as in the Plan above (Phases 2 and 3). Needs three outcomes. The m
 4. Do not chase the divergence step. It is chaotic.
 5. The open question that matters most is why Fig. 2a shows two clusters.
 6. Update this file with results as you go. Write plainly what matched and what did not.
+
+---
+
+# Final remarks by Janvi
+
+**Q:** Icreated a tiny neural network of three neurons with two identically initialised and one differ and ploted its weight change plot as i train it on very simple task. it jumps on chaotic attractor. is this result well know in the academia?
+
+Yes, mostly. Chaotic training dynamics in small networks are well documented. The part about identically initialised neurons is the most likely place for something new, but it needs careful checking.
+
+What's already known
+- Gradient descent is a discrete-time map. With a large enough learning rate it goes through period-doubling into chaos, much like the logistic map. This shows up even in one- or two-parameter models. Kong & Tao (NeurIPS 2020) and Zhu et al. (2022, a minimalist edge-of-stability example) work this out.
+- Edge of stability. Cohen et al. (2021) showed that full-batch gradient descent on real networks settles where the sharpness (the largest Hessian eigenvalue) hovers around 2/learning rate, and the loss oscillates without converging. Small toy networks show the same thing as bifurcations and chaos.
+- Lyapunov exponents along training trajectories. Several papers measure them directly, for example Danovski, Soriano & Lacasa (2024) on chaos in network training trajectories.
+
+**Q:** this paper https://arxiv.org/pdf/2510.05606 also runs an experiment on two neuron network. I want to udnerstand if this is not one of the contribution of why have they used this experiment in paper. for sure it would be supporting their orignal claim. in very very simple words tell me how doe sthis chaotic attractor behaviour fit in this papaer? be precise. c
+
+Yes, your result is essentially the paper's Fig. 2. Ly & Gong train a network with two hidden neurons (4 weights, tanh, 8 random data points, full-batch gradient descent at learning rate 2.5). Training that starts with the two neurons identical stays identical and moves on a chaotic attractor. They show this but don't claim it as their contribution. It is one building block for their real claim.
+
+Their main claim: the result of training (which solution you end up with) is unpredictable in a way that's stronger than chaos. Making the initial weights more precise barely helps. They call this "riddled basins."
+
+How the chaotic attractor fits, in simple steps:
+
+1. The identical-neuron plane is a trap. If the two neurons start identical, gradient descent keeps them identical forever. They call this plane P+.
+2. Inside that trap, training is chaotic. This is your observation. It is the chaotic attractor A, with a positive Lyapunov exponent λ1 = 0.156.
+3. On average the trap pulls nearby points in. The transverse Lyapunov exponents are negative, so networks that start near-identical tend to become identical.
+4. But the chaos keeps passing through weak spots. The attractorbits where the trap pushes points out instead. Fig. 2b showsthis as occasional positive finite-time transverse exponents.
+5. There are other places training can end up. It can also go t to infinity.
+6. Together this gives riddling. Steps 1–5 are the textbook conditions for riddled basins. Arbitrarily close to any start that ends in P+, there are
+   starts that end somewhere else. They show this fractal map iexponent is about 0.013, which means even a 10⁶ times moreprecise initialization barely improves your ability to predict the outcome.
+
+**Q:** cool. now coming to reason. they then expalin part of the reason right? just few candidate reasons why this might be happening. one is that if few neurons end up having weights that are close then they are on P+ plane and on plus plane there are chaotic attractors on which weights keep jumping. but why would this give riddling? riddling is now matter how small you go, you will have boundries almost at same distand no matter how much you zoom. right?
+
+Two corrections first.
+
+1. It's one mechanism, not a few candidates. In the tiny model they show this mechanism really causes the riddling. For big networks they only show the evidence is consistent with it.
+2. Riddling, more precisely: pick any starting point that ends in P+ and draw a small ball around it. That ball always contains some starting points that end somewhere else, and the fraction of them stays about the same however small you make the ball. So yes, it looks the same at every zoom level.
+
+**Q:** there are two different planes. one plane is the plane of weights of network. and second plane is p plus. we have attractors in p plus. how does attractors in p plus result in riddling in fist plane of weights ?
+
+They aren't two separate planes. P+ sits inside the weight space.
+
+- Weight space has 4 dimensions, one for each weight: (w1⁽¹⁾, w2⁽¹⁾, w1⁽²⁾, w2⁽²⁾).
+- P+ is a 2-dimensional flat slice of that same 4D space: all the points where neuron 1 = neuron 2.
+- The attractor lives on that slice.
+
+**Q:** now help me understand how riddling happens in 2 neuron network. I understand the formation of attractor.
+
+In the two-neuron network, riddling comes from a tug-of-war that luck decides, and chaos supplies the luck.
+
+1. Split each starting point into two parts.
+- Its position along P+: roughly the "average neuron".
+- Its gap: how far apart the two neurons are (w1 − w2), which is the distance from P+.
+
+2. The position moves chaotically on A. This is the part you already understand.
+
+3. Each step multiplies the gap by some factor. That factor depends on where on A you currently are.
+- At most places it is below 1, so the gap shrinks.
+- At a few weak spots it is above 1, so the gap grows.
+
+4. On average the gap shrinks. That is what the negative transverse exponent (λ3 < 0) means. So most of the time the gap goes to 0 and the run lands on A.
+
+5. Some runs get an unlucky streak. If a run hits several weak spots close together, the gap grows large. Once it is large enough, P− or infinity pulls the run away and it never comes back.
+
+6. Chaos makes the luck different for nearby starts.
+- Take a start that lands on A and nudge it by a tiny amount ε.
+- Because the motion on A is chaotic, the nudged copy soon follows a completely different path along A.
+- So it meets a different sequence of weak spots, which means different luck.
+- A fixed fraction of the nudged copies get an unlucky streak and escape.
+
+7. That holds however small ε is. A smaller nudge only delays the moment the two paths diverge, by a few extra steps. After that, the chance of an unlucky streak is about the same. So every tiny neighbourhood still contains escapers, and the fraction is roughly constant at every zoom level. That is riddling, and it is why φ ≈ 0.
+
+**Q:** so the riddling is present only at higher learning rate is it?
+
+Mostly yes, but it shows up in a window of learning rates, not simply at "higher" ones.
+
+In the two-neuron model (Extended Data Fig. 9):
+
+| Learning rate | Result |
+|---|---|
+| 0.1 | no riddling |
+| 1 | partial riddling (some regions riddled, some not) |
+| 2.5–2.7 | true riddling |
+| 3 | training is chaotic for a while, then diverges |
+
+Why a small learning rate kills it: gradient descent then moves smoothly downhill and settles to a fixed point. There is no chaos, so nothing rolls the dice.
+
+Why a too-large learning rate kills it: training simply diverges.
+
+**Q:** really. that nwhat is the point of this paper. no body trained with huge learning rate. and does that mean that the fractal pattern in networks with lower learning rate is abscent?
+
+The point is that in deep networks, riddling shows up at learning rates people actually use. Only the two-neuron model needs a huge learning rate.
+
+- The 2.5 in the toy model is just the value where that tiny model happens to become chaotic. Its job is to show the mechanism clearly. It isn't a training recommendation.
+- For VGG-12 with SGD, riddling appears at 0.1. That is the standard learning rate for that setup, and in their sweep it also gave the best test performance. Your 0.001 trained worse there.
+- For BERT fine-tuning with AdamW, riddling appears at 5×10⁻⁵. That is a completely normal fine-tuning learning rate.
+
+So the uncomfortable claim is this: the learning rate that gives you the best model tends to be the one where results can't be reproduced. If you lower it to get reproducibility, you lose performance.
+
+Is the fractal pattern absent at lower learning rates? The riddled, scale-invariant kind is absent. At small learning rates:
+- Two runs from nearly identical starts reach the same solution. VGG churn is about 0.4%, and BERT at 10⁻⁷ is about 0.1%.
+- f(ε) goes to 0 as ε shrinks, so more precision does make the outcome predictable.
+- In the toy model at η = 0.1, the basin map is smooth (Extended Data Fig. 9a).
+
+Ordinary fractal boundaries could still exist between basins at low learning rates. Earlier work found that kind of fractal structure in hyperparameter space. This paper doesn't measure that case, though, so I can't say from it whether they are there.
+
+**Q:** you said two contradicting claims. first that for most normal size neetworks like BERT the riddling happens at 5  *10 power -5. which is where we usually train. and second you said fractal pattern and riddling is abscent in small learning rate trains.
+
+Those two claims don't contradict each other. Whether a learning rate counts as "small" depends on the model, and I should have said that clearly.
+
+| Model | Normal (best-performing) learning rate | Riddling? | Much smaller learning rate | Riddling? |
+|---|---|---|---|---|
+| Two-neuron toy | 2.5 | yes | 0.1 | no |
+| VGG-12 + SGD | 0.1 | yes | 0.001 | no |
+| BERT + AdamW | 5×10⁻⁵ | yes | 10⁻⁷ | no |
+
+For BERT, 5×10⁻⁵ looks tiny as a number, but it is BERT's normal learning rate. When I said riddling is absent at small learning rates, I meant rates well below your model's normal one, like 10⁻⁷ for BERT.
+
+So both statements are true together:
+- At the learning rate you'd normally use, riddling is present.
+- Lower it well below that and riddling disappears, but the model trains worse.
+
+**Q:** so what is the practical implication of this paper?
+
+At your normal, best-performing learning rate, you can't fully reproduce a training run. Even with the same seed, the same data order and deterministic code, a bit-level difference such as a GPU rounding difference can send you to a different solution. This is built into the training dynamics, so tighter engineering won't remove it.
+
+What that means in practice:
+
+1. Stop chasing exact reproducibility through precision. Fixing seeds and making everything deterministic helps less than you'd expect, because tiny differences get amplified anyway.
+2. Report results over several runs. Treat one training run as one random sample, and report the mean and spread across several.
+3. Expect churn between retrains. Retraining the same model on the same data can change some test predictions (about 3% for their VGG, 27% for BERT). That matters for safety-critical uses like medical diagnosis, where predictions shouldn't flip between versions.
+4. There's a trade-off. Lowering the learning rate restores reproducibility but costs performance, so you choose one or the other.
+5. A possible fix the paper suggests is breaking symmetries in the network, so the identical-neuron and sign-flip planes don't exist. This is an untested suggestion, not a proven fix.
+
+**Q:** there could be other plans like idenatical neuron plane.
+
+Yes, and the paper says so. Each symmetry of the network creates its own invariant plane. In the two-neuron tanh model they find four:
+
+| Plane | Condition | Why it's invariant |
+|---|---|---|
+| P+ | neuron 1 = neuron 2 | permutation symmetry: identical neurons get identical gradients |
+| P− | neuron 1 = −neuron 2 | tanh is odd, so a sign-flipped pair stays sign-flipped |
+| P₁⁰, P₂⁰ | a neuron's weights are all 0 | tanh(0) = 0, so a dead neuron gets zero gradient and stays dead |
+
+In a big network you can combine these freely: any pair of neurons matching, any neuron flipped, any subset of neurons dead, in any layer. So the number of planes is enormous. For VGG-12 they tracked the "dead neuron" planes and found 1772 different end states.
