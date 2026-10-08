@@ -595,6 +595,32 @@ Things that could explain 43,841 against about 94,000, in no particular order. N
 - Also save the raw trajectory as `code/fig2a_trajectory.npy` so later experiments can reuse it.
 - Show our figure next to the paper's Fig. 2a (page 3 of the PDF above).
 
+### Figures produced (Oct 8, 2026, regenerate with "How to run" above)
+
+**Model diagrams**
+
+![2-neuron model](code/arch_2neuron.png)
+
+![3-neuron model](code/arch_3neuron.png)
+
+**2-neuron attractor** (`fig2a_replication.py`, lr 2.5, seed-0 start, float64). Left: x = θ·e1, y = θ·e2, coloured by epoch. Middle: same points in random draw order, so late dots don't hide early ones. Right: x and y against epoch.
+
+![Fig. 2a replication](code/fig2a_replication.png)
+
+What it shows: two lobes, upper-right (x, y > 0) and lower-left (x, y < 0). The right panel shows the one trajectory sitting in one lobe for a long stretch, then jumping to the other: upper-right for about epochs 0-0.1 and 0.85-2.0 (x10^4), lower-left for about 0.1-0.85 and from 2.0 to the end. The run diverged at step 43841, so the plot ends near epoch 3.8 x10^4 after the last 6000 steps are dropped. This is the open "two clusters" question in the notes above: one trajectory that switches lobes, not two separate attractors.
+
+**3-neuron attractor** (`three_neuron.py full 3.5`, lr 3.5, 100,000 steps, no divergence). Start is (a, a, b, c, c, d), so neurons 0 and 1 stay identical. Left: (a, c, b). Right: (a, c, d). a, c = pair input and output weight; b, d = third neuron's input and output weight.
+
+![3-neuron attractor](code/three_neuron_lr3.5.png)
+
+Rotatable version (open in a browser, 9.8 MB): [code/three_neuron_lr3.5_interactive.html](code/three_neuron_lr3.5_interactive.html)
+
+**Henon map** (`henon_demo.py`, intuition only: a chaotic map mixes early and late dots along the whole shape)
+
+![Henon demo](code/henon_demo.png)
+
+---
+
 ### Success criteria (written before running)
 
 - [ ] The trajectory stays exactly on P+ (differences of the paired weights are 0.0).
