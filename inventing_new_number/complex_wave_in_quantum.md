@@ -4,9 +4,11 @@ Notes from a conversation (Oct 9–10, 2026). The question was where complex num
 
 **Simulation:** Falstad's 1D Quantum Mechanics applet: https://www.falstad.com/qm1d/
 
-![Finite well right after "measure position"](falstad_measure_position.png)
+![Finite well, Stopped, right after "measure position"](falstad_stopped_spike.png)
 
-*Screenshot: Setup = Finite Well, taken a moment after Measure → Position. The spike has already spread out.*
+*Screenshot: Setup = Finite Well, made narrow and shallow, with **Stopped** ticked, right after Measure → Position. Time is frozen, so the position graph (middle) still shows the spike. The momentum graph (bottom) is wide: sharp position, spread-out momentum. This well has only **3 allowed energies** (3 circles), so the spike can only be built from 3 waves. That's why it isn't razor-thin, and why the small red and cyan bumps beside it show leftover wiggles that 3 waves can't cancel. All three clock hands point the same way (left), because at the moment of measurement they line up to build the spike.*
+
+*An earlier screenshot (deep, wide well with about 20 allowed energies, taken a moment after measuring) showed the spike already spread across the whole box, with the red average-energy line jumped high up.*
 
 ---
 
