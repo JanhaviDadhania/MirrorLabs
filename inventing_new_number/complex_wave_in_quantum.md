@@ -73,6 +73,27 @@ Consequences visible in the screenshot:
 
 To see the spike itself: tick **Stopped**, then Measure → Position. Untick it to watch the spike spread.
 
+## One electron, one wave: so why many waves?
+
+One electron has one wave, ψ. The "many waves" aren't extra things. They're a **recipe** for describing that one wave.
+
+**Guitar string.** One string, so at any moment one shape. But a plucked shape is complicated, so it's described as a mix of simple pieces:
+- the basic note, one smooth hump;
+- plus a bit of the next note, two humps;
+- plus a little of three humps, and so on.
+
+Each piece is a pure note, and the mix is why a guitar sounds different from a flute playing the same note. There's still only one string with one shape. The pieces just say what it's made of.
+
+**The electron is the same.** The circles in the simulator are the recipe:
+- each circle is one pure shape, one allowed energy, like one pure note;
+- the arrow in it says how much of that shape is in the mix, and at what angle.
+
+Add up all the pieces and you get the one wave in the middle graph.
+
+**Why use a recipe at all?** Each pure piece is simple in time: it just spins at its own speed and never changes shape. The full wave changes in complicated ways. So the easy way to predict it is to break it into pieces, spin each one, and add them back up. That's what the simulator does every frame.
+
+**Where it gets strange:** when you measure energy, the electron doesn't report the mix. It picks one piece at random, bigger pieces more often, and becomes just that one pure shape.
+
 ## Things to try next
 
 - Measure → Energy a few times from the same mix. It snaps to one clean shape, and bigger circles come up more often.
